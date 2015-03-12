@@ -14,6 +14,7 @@
 		6C5C9BA41AB180130087111F /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6C5C9BA31AB180130087111F /* Images.xcassets */; };
 		6C5C9BA71AB180130087111F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C5C9BA51AB180130087111F /* LaunchScreen.xib */; };
 		6C5C9BB31AB180130087111F /* DXConfigurableDatePickerExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C5C9BB21AB180130087111F /* DXConfigurableDatePickerExampleTests.m */; };
+		6C5C9BBF1AB185FD0087111F /* DXConfigurableDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C5C9BBE1AB185FD0087111F /* DXConfigurableDatePicker.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		6C5C9BAC1AB180130087111F /* DXConfigurableDatePickerExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DXConfigurableDatePickerExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C5C9BB11AB180130087111F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6C5C9BB21AB180130087111F /* DXConfigurableDatePickerExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DXConfigurableDatePickerExampleTests.m; sourceTree = "<group>"; };
+		6C5C9BBD1AB185FD0087111F /* DXConfigurableDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DXConfigurableDatePicker.h; sourceTree = "<group>"; };
+		6C5C9BBE1AB185FD0087111F /* DXConfigurableDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DXConfigurableDatePicker.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +84,7 @@
 		6C5C9B951AB180130087111F /* DXConfigurableDatePickerExample */ = {
 			isa = PBXGroup;
 			children = (
+				6C5C9BBC1AB1823A0087111F /* DXConfigurableDatePicker */,
 				6C5C9B9A1AB180130087111F /* AppDelegate.h */,
 				6C5C9B9B1AB180130087111F /* AppDelegate.m */,
 				6C5C9B9D1AB180130087111F /* ViewController.h */,
@@ -117,6 +121,15 @@
 				6C5C9BB11AB180130087111F /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6C5C9BBC1AB1823A0087111F /* DXConfigurableDatePicker */ = {
+			isa = PBXGroup;
+			children = (
+				6C5C9BBD1AB185FD0087111F /* DXConfigurableDatePicker.h */,
+				6C5C9BBE1AB185FD0087111F /* DXConfigurableDatePicker.m */,
+			);
+			path = DXConfigurableDatePicker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -221,6 +234,7 @@
 			files = (
 				6C5C9B9F1AB180130087111F /* ViewController.m in Sources */,
 				6C5C9B9C1AB180130087111F /* AppDelegate.m in Sources */,
+				6C5C9BBF1AB185FD0087111F /* DXConfigurableDatePicker.m in Sources */,
 				6C5C9B991AB180130087111F /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -414,6 +428,7 @@
 				6C5C9BB81AB180130087111F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		6C5C9BB91AB180130087111F /* Build configuration list for PBXNativeTarget "DXConfigurableDatePickerExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -422,6 +437,7 @@
 				6C5C9BBB1AB180130087111F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
