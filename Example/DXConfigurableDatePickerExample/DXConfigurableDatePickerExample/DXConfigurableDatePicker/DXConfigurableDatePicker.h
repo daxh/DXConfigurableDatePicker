@@ -80,9 +80,6 @@
 /// The maximum year that a month picker can show.
 @property (nonatomic, strong) NSNumber* maximumYear;
 
-/// A Boolean value that determines whether the year is shown first.
-@property (nonatomic) BOOL yearFirst;
-
 /// A Boolean value that determines whether the month wraps
 @property (nonatomic) BOOL wrapMonths;
 
