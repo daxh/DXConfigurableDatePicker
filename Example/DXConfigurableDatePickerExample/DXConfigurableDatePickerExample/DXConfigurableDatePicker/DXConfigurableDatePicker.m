@@ -11,9 +11,12 @@
 #define MONTH_ROW_MULTIPLIER 340
 #define DEFAULT_MINIMUM_YEAR 1
 #define DEFAULT_MAXIMUM_YEAR 99999
+#define DEFAULT_MAX_NUM_OF_DAYS 31
 #define DATE_COMPONENT_FLAGS NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth
 
 @interface DXConfigurableDatePicker()
+
+@property (nonatomic, strong) NSCalendar * calendar;
 
 @property (nonatomic) int componentDay;
 @property (nonatomic) int componentMonth;
@@ -27,10 +30,13 @@
 
 @implementation DXConfigurableDatePicker
 
+@synthesize calendar = _calendar;
 @synthesize date = _date;
 @synthesize monthStrings = _monthStrings;
 @synthesize enableColourRow = _enableColourRow;
 @synthesize configurableDatePickerDelegate = _configurableDatePickerDelegate;
+
+#pragma mark - SET UP
 
 -(id)initWithDate:(NSDate *)date{
     self = [super init];
@@ -80,6 +86,7 @@
     self.dataSource = self;
     self.delegate = self;
     
+    self.calendar = [NSCalendar currentCalendar];
     _enableColourRow = YES;
     _wrapMonths = YES;
 }
@@ -121,10 +128,30 @@
     return 2;
 }
 
--(NSArray *)monthStrings
+-(void)setDate:(NSDate *)date
 {
-    return [[NSDateFormatter alloc] init].monthSymbols;
+    NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:date];
+    components.timeZone = [NSTimeZone defaultTimeZone];
+    
+    if (self.minimumYear && components.year < self.minimumYear.integerValue)
+        components.year = self.minimumYear.integerValue;
+    else if (self.maximumYear && components.year > self.maximumYear.integerValue)
+        components.year = self.maximumYear.integerValue;
+    
+    if(self.wrapMonths){
+        NSInteger monthMidpoint = self.monthStrings.count * (MONTH_ROW_MULTIPLIER / 2);
+        [self selectRow:(components.month - 1 + monthMidpoint) inComponent:self.componentMonth animated:NO];
+    }
+    else {
+        [self selectRow:(components.month - 1) inComponent:self.componentMonth animated:NO];
+    }
+    [self selectRow:[self rowFromDay:components.day] inComponent:self.componentDay animated:NO];
+    [self selectRow:[self rowFromYear:(int)components.year] inComponent:self.componentYear animated:NO];
+    
+    _date = [[NSCalendar currentCalendar] dateFromComponents:components];
 }
+
+#pragma mark - YEARS
 
 //-(void)setYearFirst:(BOOL)yearFirst
 //{
@@ -163,12 +190,6 @@
     [self setDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
 }
 
--(void)setWrapMonths:(BOOL)wrapMonths
-{
-    _wrapMonths = wrapMonths;
-    [self reloadAllComponents];
-}
-
 -(int)yearFromRow:(NSUInteger)row
 {
     int minYear = DEFAULT_MINIMUM_YEAR;
@@ -189,35 +210,58 @@
     return year - minYear;
 }
 
--(void)setDate:(NSDate *)date
-{
-    NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:date];
-    components.timeZone = [NSTimeZone defaultTimeZone];
-    
-    if (self.minimumYear && components.year < self.minimumYear.integerValue)
-        components.year = self.minimumYear.integerValue;
-    else if (self.maximumYear && components.year > self.maximumYear.integerValue)
-        components.year = self.maximumYear.integerValue;
-    
-    if(self.wrapMonths){
-        NSInteger monthMidpoint = self.monthStrings.count * (MONTH_ROW_MULTIPLIER / 2);
-        
-        [self selectRow:(components.month - 1 + monthMidpoint) inComponent:self.componentMonth animated:NO];
-    }
-    else {
-        [self selectRow:(components.month - 1) inComponent:self.componentMonth animated:NO];
-    }
-    [self selectRow:[self rowFromYear:(int)components.year] inComponent:self.componentYear animated:NO];
-    
-    _date = [[NSCalendar currentCalendar] dateFromComponents:components];
+#pragma mark - MONTHS
+
+-(NSArray *)monthStrings {
+    return [[NSDateFormatter alloc] init].monthSymbols;
 }
 
+-(void)setWrapMonths:(BOOL)wrapMonths {
+    _wrapMonths = wrapMonths;
+    [self reloadAllComponents];
+}
+
+-(NSUInteger) monthFromRow:(NSUInteger) row {
+    return row % self.monthStrings.count + 1;
+}
+
+-(NSString *) monthStringFromRow:(NSUInteger) row {
+    return self.monthStrings[[self monthFromRow:row] - 1];
+}
+
+#pragma mark - DAYS
+
+-(NSUInteger) findDayAdjustment:(NSUInteger) day{
+    NSDateComponents* components = [self.calendar components:DATE_COMPONENT_FLAGS fromDate:[NSDate date]];
+    components.timeZone = [NSTimeZone defaultTimeZone];
+    components.year = [self yearFromRow:[self selectedRowInComponent:self.componentYear]];
+    components.month = [self monthFromRow:[self selectedRowInComponent:self.componentMonth]];
+    NSDate * date = [self.calendar dateFromComponents:components];
+    NSRange rng = [self.calendar rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:date];
+    return (day >= rng.location && day <=rng.length) ? 0 : day - rng.length;
+}
+
+-(NSUInteger) dayFromRow:(NSUInteger) row{
+    return row + 1;
+}
+
+-(NSUInteger) rowFromDay:(NSUInteger) day{
+    return day - 1;
+}
 #pragma mark - UIPickerViewDataSource
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
+    NSUInteger day = [self dayFromRow:[self selectedRowInComponent:self.componentDay]];
+    NSUInteger dayAdjustment = [self findDayAdjustment:day];
+    if (dayAdjustment > 0) {
+        day -= dayAdjustment;
+        [self selectRow:[self rowFromDay:day] inComponent:self.componentDay animated:YES];
+    }
+    
     NSDateComponents* components = [[NSDateComponents alloc] init];
-    components.month = 1 + ([self selectedRowInComponent:self.componentMonth] % self.monthStrings.count);
+    components.day = day;
+    components.month = [self monthFromRow:[self selectedRowInComponent:self.componentMonth]];
     components.year = [self yearFromRow:[self selectedRowInComponent:self.componentYear]];
     
     [self willChangeValueForKey:@"date"];
@@ -238,22 +282,28 @@
 
 -(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    if (component == self.componentMonth && !self.wrapMonths)
-        return self.monthStrings.count;
+    NSInteger numberOfRows = 0;
+    if (component == self.componentDay){
+        numberOfRows = DEFAULT_MAX_NUM_OF_DAYS;
+    } else if (component == self.componentMonth && !self.wrapMonths)
+        numberOfRows = self.monthStrings.count;
     else if(component == self.componentMonth)
-        return MONTH_ROW_MULTIPLIER * self.monthStrings.count;
+        numberOfRows = MONTH_ROW_MULTIPLIER * self.monthStrings.count;
+    else if (component == self.componentYear){
+        int maxYear = DEFAULT_MAXIMUM_YEAR;
+        if (self.maximumYear)
+            maxYear = self.maximumYear.intValue;
+        numberOfRows = [self rowFromYear:maxYear] + 1;
+    }
     
-    int maxYear = DEFAULT_MAXIMUM_YEAR;
-    if (self.maximumYear)
-        maxYear = self.maximumYear.intValue;
-    
-    return [self rowFromYear:maxYear] + 1;
+    NSLog(@"comp %ld no_rows %ld", component, numberOfRows);
+    return numberOfRows;
 }
 
 -(CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
 {
     if (component == self.componentMonth)
-        return 132.0f;
+        return 119.0f;
     else
         return 76.0f;
 }
@@ -269,14 +319,13 @@
     CGFloat width = [self pickerView:self widthForComponent:component];
     CGRect frame = CGRectMake(0.0f, 0.0f, width, 45.0f);
     
-    if (component == self.componentMonth)
-    {
-        const CGFloat padding = 37.0f;
-        if (component) {
-            frame.origin.x += padding;
-            frame.size.width -= padding;
-        }
-        
+    if (component == self.componentMonth) {
+        const CGFloat padding = 20.0f;
+        frame.origin.x += padding;
+        frame.size.width -= padding;
+    } else if (component == self.componentYear) {
+        const CGFloat padding = 10.0f;
+        frame.origin.x += padding;
         frame.size.width -= padding;
     }
     
@@ -294,11 +343,11 @@
     
     NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
     if (component == self.componentDay) {
-        label.text = [NSString stringWithFormat:@"%ld", row];
+        label.text = [NSString stringWithFormat:@"%ld", [self dayFromRow:row]];
         label.textAlignment = NSTextAlignmentCenter;
         formatter.dateFormat = @"d";
     } else if (component == self.componentMonth) {
-        label.text = [self.monthStrings objectAtIndex:(row % self.monthStrings.count)];
+        label.text = [self monthStringFromRow:row];
         formatter.dateFormat = @"MMMM";
         label.textAlignment = NSTextAlignmentLeft;
     } else {
