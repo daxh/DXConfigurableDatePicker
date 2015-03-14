@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DXConfigurableDatePicker.h"
 
 @interface ViewController : UIViewController
 
+@property (nonatomic, strong) IBOutlet DXConfigurableDatePicker * confDatePicker;
 
 @end
 

@@ -42,6 +42,9 @@
                             <constraint firstItem="PDK-gr-hDT" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="xAC-Zb-ZCt"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="confDatePicker" destination="PDK-gr-hDT" id="BoH-6J-WaE"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

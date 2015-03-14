@@ -1,18 +1,33 @@
-//
-//  DXConfigurableDatePicker.m
-//  DXConfigurableDatePickerExample
-//
-//  Created by Denis Suprun on 12/03/15.
-//  Copyright (c) 2015 daxh. All rights reserved.
-//
+/*
+ Copyright (C) 2014-2015 Denis Suprun
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
 
 #import "DXConfigurableDatePicker.h"
 
+#define DATE_COMPONENT_FLAGS NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth
 #define MONTH_ROW_MULTIPLIER 340
+#define DEFAULT_MAX_NUM_OF_DAYS 31
+#define DAY_ROW_MULTIPLIER 340
 #define DEFAULT_MINIMUM_YEAR 1
 #define DEFAULT_MAXIMUM_YEAR 99999
-#define DEFAULT_MAX_NUM_OF_DAYS 31
-#define DATE_COMPONENT_FLAGS NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth
 
 @interface DXConfigurableDatePicker()
 
@@ -38,7 +53,7 @@
 
 #pragma mark - SET UP
 
--(id)initWithDate:(NSDate *)date{
+-(id)initWithDate:(NSDate *)date {
     self = [super init];
     if (self) {
         [self initialize];
@@ -49,13 +64,12 @@
     return self;
 }
 
--(id)init{
+-(id)init {
     self = [self initWithDate:[NSDate date]];
     return self;
 }
 
--(id)initWithCoder:(NSCoder *)aDecoder
-{
+-(id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     
     if (self)
@@ -68,8 +82,7 @@
     return self;
 }
 
--(id)initWithFrame:(CGRect)frame
-{
+-(id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     
     if (self)
@@ -82,62 +95,51 @@
     return self;
 }
 
--(void) initialize{
+-(void) initialize {
     self.dataSource = self;
     self.delegate = self;
     
     self.calendar = [NSCalendar currentCalendar];
     _enableColourRow = YES;
     _wrapMonths = YES;
+    _wrapDays = YES;
 }
 
--(id<UIPickerViewDelegate>)delegate
-{
+-(id<UIPickerViewDelegate>)delegate {
     return self;
 }
 
--(void)setDelegate:(id<UIPickerViewDelegate>)delegate
-{
+-(void)setDelegate:(id<UIPickerViewDelegate>)delegate {
     if ([delegate isEqual:self])
         [super setDelegate:delegate];
 }
 
--(id<UIPickerViewDataSource>)dataSource
-{
+-(id<UIPickerViewDataSource>)dataSource {
     return self;
 }
 
--(void)setDataSource:(id<UIPickerViewDataSource>)dataSource
-{
+-(void)setDataSource:(id<UIPickerViewDataSource>)dataSource {
     if ([dataSource isEqual:self])
         [super setDataSource:dataSource];
 }
 
--(int)componentDay
-{
+-(int)componentDay {
     return 1;
 }
 
--(int)componentMonth
-{
+-(int)componentMonth {
     return 0;
 }
 
--(int)componentYear
-{
+-(int)componentYear {
     return 2;
 }
 
--(void)setDate:(NSDate *)date
-{
+-(void)setDate:(NSDate *)date {
     NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:date];
     components.timeZone = [NSTimeZone defaultTimeZone];
     
-    if (self.minimumYear && components.year < self.minimumYear.integerValue)
-        components.year = self.minimumYear.integerValue;
-    else if (self.maximumYear && components.year > self.maximumYear.integerValue)
-        components.year = self.maximumYear.integerValue;
-    
+    // setting months
     if(self.wrapMonths){
         NSInteger monthMidpoint = self.monthStrings.count * (MONTH_ROW_MULTIPLIER / 2);
         [self selectRow:(components.month - 1 + monthMidpoint) inComponent:self.componentMonth animated:NO];
@@ -145,7 +147,21 @@
     else {
         [self selectRow:(components.month - 1) inComponent:self.componentMonth animated:NO];
     }
-    [self selectRow:[self rowFromDay:components.day] inComponent:self.componentDay animated:NO];
+
+    // setting days
+    if (self.wrapDays) {
+        // TODO complete this part
+        NSInteger dayMidpoint = DEFAULT_MAX_NUM_OF_DAYS * (MONTH_ROW_MULTIPLIER / 2);
+        [self selectRow:[self rowFromDay:(components.day + dayMidpoint)] inComponent:self.componentDay animated:NO];
+    } else {
+        [self selectRow:[self rowFromDay:components.day] inComponent:self.componentDay animated:NO];
+    }
+
+    // setting years
+    if (self.minimumYear && components.year < self.minimumYear.integerValue)
+        components.year = self.minimumYear.integerValue;
+    else if (self.maximumYear && components.year > self.maximumYear.integerValue)
+        components.year = self.maximumYear.integerValue;
     [self selectRow:[self rowFromYear:(int)components.year] inComponent:self.componentYear animated:NO];
     
     _date = [[NSCalendar currentCalendar] dateFromComponents:components];
@@ -162,8 +178,7 @@
 //    [self setDate:date];
 //}
 
--(void)setMinimumYear:(NSNumber *)minimumYear
-{
+-(void)setMinimumYear:(NSNumber *)minimumYear {
     NSDate* currentDate = self.date;
     NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:currentDate];
     components.timeZone = [NSTimeZone defaultTimeZone];
@@ -176,8 +191,7 @@
     [self setDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
 }
 
--(void)setMaximumYear:(NSNumber *)maximumYear
-{
+-(void)setMaximumYear:(NSNumber *)maximumYear {
     NSDate* currentDate = self.date;
     NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:currentDate];
     components.timeZone = [NSTimeZone defaultTimeZone];
@@ -190,8 +204,7 @@
     [self setDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
 }
 
--(int)yearFromRow:(NSUInteger)row
-{
+-(int)yearFromRow:(NSUInteger)row {
     int minYear = DEFAULT_MINIMUM_YEAR;
     
     if (self.minimumYear)
@@ -200,8 +213,7 @@
     return (int)row + minYear;
 }
 
--(NSUInteger)rowFromYear:(int)year
-{
+-(NSUInteger)rowFromYear:(int)year {
     int minYear = DEFAULT_MINIMUM_YEAR;
     
     if (self.minimumYear)
@@ -231,7 +243,12 @@
 
 #pragma mark - DAYS
 
--(NSUInteger) findDayAdjustment:(NSUInteger) day{
+-(void)setWrapDays:(BOOL)wrapDays {
+    _wrapDays = wrapDays;
+    [self reloadAllComponents];
+}
+
+-(NSUInteger) findDayAdjustment:(NSUInteger) day {
     NSDateComponents* components = [self.calendar components:DATE_COMPONENT_FLAGS fromDate:[NSDate date]];
     components.timeZone = [NSTimeZone defaultTimeZone];
     components.year = [self yearFromRow:[self selectedRowInComponent:self.componentYear]];
@@ -241,17 +258,18 @@
     return (day >= rng.location && day <=rng.length) ? 0 : day - rng.length;
 }
 
--(NSUInteger) dayFromRow:(NSUInteger) row{
-    return row + 1;
+-(NSUInteger) dayFromRow:(NSUInteger) row {
+    return row % DEFAULT_MAX_NUM_OF_DAYS + 1;
 }
 
--(NSUInteger) rowFromDay:(NSUInteger) day{
+-(NSUInteger) rowFromDay:(NSUInteger) day {
+    // TODO select row nearest to curently select row
     return day - 1;
 }
+
 #pragma mark - UIPickerViewDataSource
 
--(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
-{
+-(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     NSUInteger day = [self dayFromRow:[self selectedRowInComponent:self.componentDay]];
     NSUInteger dayAdjustment = [self findDayAdjustment:day];
     if (dayAdjustment > 0) {
@@ -275,20 +293,19 @@
     [self didChangeValueForKey:@"date"];
 }
 
--(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
-{
+-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
     return 3;
 }
 
--(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
-{
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
     NSInteger numberOfRows = 0;
     if (component == self.componentDay){
-        numberOfRows = DEFAULT_MAX_NUM_OF_DAYS;
-    } else if (component == self.componentMonth && !self.wrapMonths)
-        numberOfRows = self.monthStrings.count;
-    else if(component == self.componentMonth)
-        numberOfRows = MONTH_ROW_MULTIPLIER * self.monthStrings.count;
+        //TODO complete this stuff
+        numberOfRows = !self.wrapDays ? DEFAULT_MAX_NUM_OF_DAYS :
+                    DAY_ROW_MULTIPLIER * DEFAULT_MAX_NUM_OF_DAYS;
+    } else if (component == self.componentMonth)
+        numberOfRows = !self.wrapMonths ? self.monthStrings.count :
+                   MONTH_ROW_MULTIPLIER * self.monthStrings.count ;
     else if (component == self.componentYear){
         int maxYear = DEFAULT_MAXIMUM_YEAR;
         if (self.maximumYear)
@@ -330,8 +347,8 @@
     }
     
     UILabel * label = (UILabel *)view;
+    // Trying ti reuse view if possible
     if (label == nil) {
-        // Trying ti reuse view if possible
         label = [[UILabel alloc] initWithFrame:frame];
         //    if (_enableColourRow && [[formatter stringFromDate:[NSDate date]] isEqualToString:label.text])
         //        label.textColor = [UIColor colorWithRed:0.0f green:0.35f blue:0.91f alpha:1.0f];
@@ -358,6 +375,7 @@
     
     return label;
 }
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

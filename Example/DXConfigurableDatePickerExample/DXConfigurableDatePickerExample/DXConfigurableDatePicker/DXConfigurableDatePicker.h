@@ -80,8 +80,11 @@
 /// The maximum year that a month picker can show.
 @property (nonatomic, strong) NSNumber* maximumYear;
 
-/// A Boolean value that determines whether the month wraps
+/// A Boolean value that determines whether the months wraps
 @property (nonatomic) BOOL wrapMonths;
+
+/// A Boolean value that determines whether the days wraps
+@property (nonatomic) BOOL wrapDays;
 
 /**
  A Boolean value that determines whether the current month & year are coloured.
