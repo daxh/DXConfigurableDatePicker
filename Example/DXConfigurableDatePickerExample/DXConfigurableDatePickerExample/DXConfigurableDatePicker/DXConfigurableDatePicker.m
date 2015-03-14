@@ -263,7 +263,13 @@
 }
 
 -(NSUInteger) rowFromDay:(NSUInteger) day {
-    // TODO select row nearest to curently select row
+    if (self.wrapDays) {
+        // select row determined by day but nearest to curently selected row
+        NSUInteger row = [self selectedRowInComponent:self.componentDay];
+        NSUInteger wrap_padding = row / DEFAULT_MAX_NUM_OF_DAYS;
+        return wrap_padding * DEFAULT_MAX_NUM_OF_DAYS + day - 1;
+    }
+
     return day - 1;
 }
 
