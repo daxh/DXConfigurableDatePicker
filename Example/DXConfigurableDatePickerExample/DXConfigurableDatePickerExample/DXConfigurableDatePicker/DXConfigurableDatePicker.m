@@ -319,67 +319,63 @@
         numberOfRows = [self rowFromYear:maxYear] + 1;
     }
     
-    NSLog(@"comp %ld no_rows %ld", component, numberOfRows);
     return numberOfRows;
 }
 
--(CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component
-{
+-(CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
     if (component == self.componentMonth)
-        return 119.0f;
+        return 137.0f;
+    if (component == self.componentDay)
+        return 85.0f;
     else
-        return 76.0f;
+        return 93.0f;
 }
 
--(CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component{
-    return 32.0f;
+-(CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
+    return 45.0f;
 }
 
 -(UIView *)pickerView:(UIPickerView *)pickerView
            viewForRow:(NSInteger)row
          forComponent:(NSInteger)component
           reusingView:(UIView *)view{
-    CGFloat width = [self pickerView:self widthForComponent:component];
-    CGRect frame = CGRectMake(0.0f, 0.0f, width, 45.0f);
-    
-    if (component == self.componentMonth) {
-        const CGFloat padding = 20.0f;
-        frame.origin.x += padding;
-        frame.size.width -= padding;
-    } else if (component == self.componentYear) {
-        const CGFloat padding = 10.0f;
-        frame.origin.x += padding;
-        frame.size.width -= padding;
-    }
-    
-    UILabel * label = (UILabel *)view;
-    // Trying ti reuse view if possible
-    if (label == nil) {
-        label = [[UILabel alloc] initWithFrame:frame];
-        //    if (_enableColourRow && [[formatter stringFromDate:[NSDate date]] isEqualToString:label.text])
-        //        label.textColor = [UIColor colorWithRed:0.0f green:0.35f blue:0.91f alpha:1.0f];
+    // Trying to reuse view if possible
+    if (view == nil) {
+        CGFloat width = [self pickerView:self widthForComponent:component];
+        CGFloat height = [self pickerView:self rowHeightForComponent:component];
+        CGRect frame = CGRectMake(0.0f, 0.0f, width, height);
+        view = [[UIView alloc] initWithFrame:frame];
+
+        UILabel * label = [[UILabel alloc] initWithFrame:frame];
         label.font = [UIFont systemFontOfSize:24.0f];
         label.backgroundColor = [UIColor clearColor];
         label.shadowOffset = CGSizeMake(0.0f, 0.1f);
         label.shadowColor = [UIColor whiteColor];
+        [view addSubview:label];
+        //    if (_enableColourRow && [[formatter stringFromDate:[NSDate date]] isEqualToString:label.text])
+        //        label.textColor = [UIColor colorWithRed:0.0f green:0.35f blue:0.91f alpha:1.0f];
+        
+        if (component == self.componentMonth) {
+            CGRect lblFrame = ((UILabel *)view.subviews[0]).frame;
+            lblFrame.origin.x = 32;
+            [((UILabel *)view.subviews[0]) setFrame:lblFrame];
+            
+        }
     }
     
-    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    UILabel * label = view.subviews[0];
     if (component == self.componentDay) {
         label.text = [NSString stringWithFormat:@"%ld", [self dayFromRow:row]];
         label.textAlignment = NSTextAlignmentCenter;
-        formatter.dateFormat = @"d";
     } else if (component == self.componentMonth) {
         label.text = [self monthStringFromRow:row];
-        formatter.dateFormat = @"MMMM";
         label.textAlignment = NSTextAlignmentLeft;
     } else {
         label.text = [NSString stringWithFormat:@"%d", [self yearFromRow:row]];
         label.textAlignment = NSTextAlignmentLeft;
-        formatter.dateFormat = @"y";
     }
     
-    return label;
+    return view;
 }
 
 /*
