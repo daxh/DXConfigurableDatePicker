@@ -22,12 +22,12 @@
 
 #import "DXConfigurableDatePicker.h"
 
-#define DATE_COMPONENT_FLAGS NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth
-#define MONTH_ROW_MULTIPLIER 340
-#define DEFAULT_MAX_NUM_OF_DAYS 31
-#define DAY_ROW_MULTIPLIER 340
-#define DEFAULT_MINIMUM_YEAR 1
-#define DEFAULT_MAXIMUM_YEAR 99999
+static const int dateComponentFlags = NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth;
+static const int rowMultiplierMonths = 340;
+static const int rowMultiplierDays = 340;
+static const int maxNumOfDays = 31;
+static const int minValOfYear = 1;
+static const int maxValOfYear = 99999;
 
 @interface DXConfigurableDatePicker()
 
@@ -136,12 +136,12 @@
 }
 
 -(void)setDate:(NSDate *)date {
-    NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:date];
+    NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:date];
     components.timeZone = [NSTimeZone defaultTimeZone];
     
     // setting months
     if(self.wrapMonths){
-        NSInteger monthMidpoint = self.monthStrings.count * (MONTH_ROW_MULTIPLIER / 2);
+        NSInteger monthMidpoint = self.monthStrings.count * (rowMultiplierMonths / 2);
         [self selectRow:(components.month - 1 + monthMidpoint) inComponent:self.componentMonth animated:NO];
     }
     else {
@@ -151,7 +151,7 @@
     // setting days
     if (self.wrapDays) {
         // TODO complete this part
-        NSInteger dayMidpoint = DEFAULT_MAX_NUM_OF_DAYS * (MONTH_ROW_MULTIPLIER / 2);
+        NSInteger dayMidpoint = maxNumOfDays * (rowMultiplierMonths / 2);
         [self selectRow:[self rowFromDay:(components.day + dayMidpoint)] inComponent:self.componentDay animated:NO];
     } else {
         [self selectRow:[self rowFromDay:components.day] inComponent:self.componentDay animated:NO];
@@ -180,7 +180,7 @@
 
 -(void)setMinimumYear:(NSNumber *)minimumYear {
     NSDate* currentDate = self.date;
-    NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:currentDate];
+    NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:currentDate];
     components.timeZone = [NSTimeZone defaultTimeZone];
     
     if (minimumYear && components.year < minimumYear.integerValue)
@@ -193,7 +193,7 @@
 
 -(void)setMaximumYear:(NSNumber *)maximumYear {
     NSDate* currentDate = self.date;
-    NSDateComponents* components = [[NSCalendar currentCalendar] components:DATE_COMPONENT_FLAGS fromDate:currentDate];
+    NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:currentDate];
     components.timeZone = [NSTimeZone defaultTimeZone];
     
     if (maximumYear && components.year > maximumYear.integerValue)
@@ -205,7 +205,7 @@
 }
 
 -(int)yearFromRow:(NSUInteger)row {
-    int minYear = DEFAULT_MINIMUM_YEAR;
+    int minYear = minValOfYear;
     
     if (self.minimumYear)
         minYear = self.minimumYear.intValue;
@@ -214,7 +214,7 @@
 }
 
 -(NSUInteger)rowFromYear:(int)year {
-    int minYear = DEFAULT_MINIMUM_YEAR;
+    int minYear = minValOfYear;
     
     if (self.minimumYear)
         minYear = self.minimumYear.intValue;
@@ -249,7 +249,7 @@
 }
 
 -(NSUInteger) findDayAdjustment:(NSUInteger) day {
-    NSDateComponents* components = [self.calendar components:DATE_COMPONENT_FLAGS fromDate:[NSDate date]];
+    NSDateComponents* components = [self.calendar components:dateComponentFlags fromDate:[NSDate date]];
     components.timeZone = [NSTimeZone defaultTimeZone];
     components.year = [self yearFromRow:[self selectedRowInComponent:self.componentYear]];
     components.month = [self monthFromRow:[self selectedRowInComponent:self.componentMonth]];
@@ -259,15 +259,15 @@
 }
 
 -(NSUInteger) dayFromRow:(NSUInteger) row {
-    return row % DEFAULT_MAX_NUM_OF_DAYS + 1;
+    return row % maxNumOfDays + 1;
 }
 
 -(NSUInteger) rowFromDay:(NSUInteger) day {
     if (self.wrapDays) {
         // select row determined by day but nearest to curently selected row
         NSUInteger row = [self selectedRowInComponent:self.componentDay];
-        NSUInteger wrap_padding = row / DEFAULT_MAX_NUM_OF_DAYS;
-        return wrap_padding * DEFAULT_MAX_NUM_OF_DAYS + day - 1;
+        NSUInteger wrap_padding = row / maxNumOfDays;
+        return wrap_padding * maxNumOfDays + day - 1;
     }
 
     return day - 1;
@@ -307,13 +307,13 @@
     NSInteger numberOfRows = 0;
     if (component == self.componentDay){
         //TODO complete this stuff
-        numberOfRows = !self.wrapDays ? DEFAULT_MAX_NUM_OF_DAYS :
-                    DAY_ROW_MULTIPLIER * DEFAULT_MAX_NUM_OF_DAYS;
+        numberOfRows = !self.wrapDays ? maxNumOfDays :
+                    rowMultiplierDays * maxNumOfDays;
     } else if (component == self.componentMonth)
         numberOfRows = !self.wrapMonths ? self.monthStrings.count :
-                   MONTH_ROW_MULTIPLIER * self.monthStrings.count ;
+                   rowMultiplierMonths * self.monthStrings.count ;
     else if (component == self.componentYear){
-        int maxYear = DEFAULT_MAXIMUM_YEAR;
+        int maxYear = maxValOfYear;
         if (self.maximumYear)
             maxYear = self.maximumYear.intValue;
         numberOfRows = [self rowFromYear:maxYear] + 1;
