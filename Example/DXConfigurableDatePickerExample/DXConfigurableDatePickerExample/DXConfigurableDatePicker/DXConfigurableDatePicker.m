@@ -383,7 +383,7 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
 }
 
 -(CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component {
-    return 45.0f;
+    return 33.0f;
 }
 
 -(UIView *)pickerView:(UIPickerView *)pickerView
@@ -398,7 +398,7 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
         view = [[UIView alloc] initWithFrame:frame];
 
         UILabel * label = [[UILabel alloc] initWithFrame:frame];
-        label.font = [UIFont systemFontOfSize:24.0f];
+        label.font = [UIFont systemFontOfSize:23.0f];
         label.backgroundColor = [UIColor clearColor];
         label.shadowOffset = CGSizeMake(0.0f, 0.1f);
         label.shadowColor = [UIColor whiteColor];
