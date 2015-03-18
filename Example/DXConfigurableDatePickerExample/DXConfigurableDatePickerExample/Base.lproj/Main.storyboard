@@ -31,19 +31,56 @@
                                     <constraint firstAttribute="height" constant="162" id="vT9-iF-zjk"/>
                                 </constraints>
                             </pickerView>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="hs0-8a-HjH">
+                                <rect key="frame" x="143" y="331" width="314" height="29"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="314" id="P4j-Po-28I"/>
+                                    <constraint firstAttribute="height" constant="28" id="W3a-gm-sgv"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="Normal"/>
+                                    <segment title="No Days"/>
+                                    <segment title="Year Only"/>
+                                </segments>
+                            </segmentedControl>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Keep width of hidden elements" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vuj-TB-DI4">
+                                <rect key="frame" x="143" y="372" width="283" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="6ST-bM-GQv"/>
+                                    <constraint firstAttribute="width" constant="283" id="qkV-hj-Vqn"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AyF-lP-Umv">
+                                <rect key="frame" x="408" y="367" width="51" height="31"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="49" id="Jw0-5N-SRs"/>
+                                    <constraint firstAttribute="height" constant="31" id="KF2-PP-yK6"/>
+                                </constraints>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="AyF-lP-Umv" firstAttribute="top" secondItem="hs0-8a-HjH" secondAttribute="bottom" constant="8" id="4X9-L9-X3v"/>
+                            <constraint firstItem="AyF-lP-Umv" firstAttribute="leading" secondItem="vuj-TB-DI4" secondAttribute="trailing" constant="-18" id="If0-Pg-WZ3"/>
+                            <constraint firstAttribute="centerX" secondItem="vuj-TB-DI4" secondAttribute="centerX" constant="15.5" id="PcO-EQ-Anp"/>
                             <constraint firstAttribute="trailing" secondItem="wGT-XC-1U1" secondAttribute="trailing" id="SZt-Sa-Sby"/>
                             <constraint firstItem="wGT-XC-1U1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Uy5-VC-2Pe"/>
                             <constraint firstItem="PDK-gr-hDT" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="141" id="ZE7-sP-pIW"/>
                             <constraint firstAttribute="trailing" secondItem="PDK-gr-hDT" secondAttribute="trailing" id="fQl-b8-Tno"/>
                             <constraint firstItem="wGT-XC-1U1" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="kph-lY-MgN"/>
+                            <constraint firstItem="hs0-8a-HjH" firstAttribute="top" secondItem="PDK-gr-hDT" secondAttribute="bottom" constant="8" id="l9L-4p-BnT"/>
+                            <constraint firstAttribute="centerX" secondItem="hs0-8a-HjH" secondAttribute="centerX" id="lWt-Mr-mDC"/>
+                            <constraint firstItem="vuj-TB-DI4" firstAttribute="top" secondItem="hs0-8a-HjH" secondAttribute="bottom" constant="13" id="osc-oY-zDq"/>
                             <constraint firstItem="PDK-gr-hDT" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="xAC-Zb-ZCt"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="confDatePicker" destination="PDK-gr-hDT" id="BoH-6J-WaE"/>
+                        <outlet property="segment" destination="hs0-8a-HjH" id="uaP-qe-qNp"/>
+                        <outlet property="switcher" destination="AyF-lP-Umv" id="vlt-et-uOC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

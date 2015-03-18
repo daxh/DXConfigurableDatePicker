@@ -12,6 +12,8 @@
 @interface ViewController : UIViewController
 
 @property (nonatomic, strong) IBOutlet DXConfigurableDatePicker * confDatePicker;
+@property (nonatomic, strong) IBOutlet UISegmentedControl * segment;
+@property (nonatomic, strong) IBOutlet UISwitch * switcher;
 
 @end
 

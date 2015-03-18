@@ -18,7 +18,33 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-//    self.confDatePicker.wrapMonths = NO;
+    [self.segment addTarget:self
+                     action:@selector(segmentValueChanged:)
+           forControlEvents:UIControlEventValueChanged];
+    [self.switcher addTarget:self
+                      action:@selector(switcherValueChanged:)
+            forControlEvents:UIControlEventValueChanged];
+}
+
+-(void)segmentValueChanged:(id)sender{
+    switch (((UISegmentedControl *)sender).selectedSegmentIndex) {
+        case 0:
+            [self.confDatePicker setDateFormat:DXConfigurableDatePickerFormatNormal];
+            break;
+        case 1:
+            [self.confDatePicker setDateFormat:DXConfigurableDatePickerFormatNoDay];
+            break;
+        case 2:
+            [self.confDatePicker setDateFormat:DXConfigurableDatePickerFormatYearOnly];
+            break;
+        default:
+            [self.confDatePicker setDateFormat:DXConfigurableDatePickerFormatNormal];
+            break;
+    }
+}
+
+-(void)switcherValueChanged:(id)sender{
+    [self.confDatePicker setKeepHiddenComponentsWidth:((UISwitch *)sender).isOn];
 }
 
 - (void)didReceiveMemoryWarning {

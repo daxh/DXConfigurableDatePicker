@@ -51,6 +51,21 @@
 @end
 
 /**
+ DXConfigurableDatePickerFormat enum contains values which defines what
+ date components will be displayed.
+ 
+ DXConfigurableDatePickerFormatNormal - all three components (mm/dd/yyyy)
+ DXConfigurableDatePickerFormatNoDay - just two components (mm/yyyy)
+ DXConfigurableDatePickerFormatYearOnly - only one (yyyy)
+ */
+
+typedef NS_ENUM(NSInteger, DXConfigurableDatePickerFormat) {
+    DXConfigurableDatePickerFormatNormal,
+    DXConfigurableDatePickerFormatNoDay,
+    DXConfigurableDatePickerFormatYearOnly
+};
+
+/**
  The DXConfigurableDatePicker class implements an object that uses multiple 
  rotating wheels to allow users to select a date in different ways: 
  normal - all three date components used, no day - only month and year date
@@ -74,6 +89,9 @@
 /// The date represented by the configurable date picker.
 @property (nonatomic, strong) NSDate* date;
 
+/// The dateFormat represented by the configurable date picker.
+@property (nonatomic) DXConfigurableDatePickerFormat dateFormat;
+
 /// The minimum year that a month picker can show.
 @property (nonatomic, strong) NSNumber* minimumYear;
 
@@ -85,6 +103,9 @@
 
 /// A Boolean value that determines whether the days wraps
 @property (nonatomic) BOOL wrapDays;
+
+/// A Boolean value that determines whether the width of hidden date component should be 0 or not
+@property (nonatomic) BOOL keepHiddenComponentsWidth;
 
 /**
  A Boolean value that determines whether the current month & year are coloured.
