@@ -30,18 +30,26 @@ static const int maxNumOfDays = 31;
 static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
 
-static const CGFloat componentWidthDay = 85.0f;
-static const CGFloat componentWidthMonth = 137.0f;
-static const CGFloat componentWidthYear = 93.0f;
+static const CGFloat componentWidthDayCoef = 0.285f;
+static const CGFloat componentWidthMonthCoef = 0.44f;
+static const CGFloat componentWidthYearCoef = 0.3f;
+static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
 
 @interface DXConfigurableDatePicker()
 
 @property (nonatomic, strong) NSCalendar * calendar;
 
+@property (nonatomic) int totalComponentsWidth;
+@property (nonatomic) int componentWidthDay;
+@property (nonatomic) int componentWidthMonth;
+@property (nonatomic) int componentWidthYear;
+
 @property (nonatomic) int componentDay;
 @property (nonatomic) int componentMonth;
 @property (nonatomic) int componentYear;
 @property (nonatomic) int componentsNumber;
+
+
 @property (nonatomic, readonly) NSArray* monthStrings;
 
 @end
@@ -109,6 +117,11 @@ static const CGFloat componentWidthYear = 93.0f;
     _wrapDays = YES;
     _keepHiddenComponentsWidth = YES;
     
+    self.totalComponentsWidth = self.frame.size.width/2;
+    self.componentWidthDay = componentWidthDayCoef * self.totalComponentsWidth;
+    self.componentWidthMonth = componentWidthMonthCoef * self.totalComponentsWidth;
+    self.componentWidthYear = componentWidthYearCoef * self.totalComponentsWidth;
+    
     [self setDateFormat:DXConfigurableDatePickerFormatNormal];
 }
 
@@ -130,39 +143,9 @@ static const CGFloat componentWidthYear = 93.0f;
         [super setDataSource:dataSource];
 }
 
-//-(int)componentDay {
-//    return 1;
-//}
-//
-//-(int)componentMonth {
-//    return 0;
-//}
-//
-//-(int)componentYear {
-//    return 2;
-//}
-
 -(void)setDate:(NSDate *)date {
     NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:date];
     components.timeZone = [NSTimeZone defaultTimeZone];
-    
-    // setting months
-    if(self.wrapMonths){
-        NSInteger monthMidpoint = self.monthStrings.count * (rowMultiplierMonths / 2);
-        [self selectRow:(components.month - 1 + monthMidpoint) inComponent:self.componentMonth animated:NO];
-    }
-    else {
-        [self selectRow:(components.month - 1) inComponent:self.componentMonth animated:NO];
-    }
-
-    // setting days
-    if (self.wrapDays) {
-        // TODO complete this part
-        NSInteger dayMidpoint = maxNumOfDays * (rowMultiplierMonths / 2);
-        [self selectRow:[self rowFromDay:(components.day + dayMidpoint)] inComponent:self.componentDay animated:NO];
-    } else {
-        [self selectRow:[self rowFromDay:components.day] inComponent:self.componentDay animated:NO];
-    }
 
     // setting years
     if (self.minimumYear && components.year < self.minimumYear.integerValue)
@@ -171,27 +154,49 @@ static const CGFloat componentWidthYear = 93.0f;
         components.year = self.maximumYear.integerValue;
     [self selectRow:[self rowFromYear:(int)components.year] inComponent:self.componentYear animated:NO];
     
+    // setting months
+    if (self.componentMonth != -1){
+        if(self.wrapMonths){
+            NSInteger monthMidpoint = self.monthStrings.count * (rowMultiplierMonths / 2);
+            [self selectRow:(components.month - 1 + monthMidpoint) inComponent:self.componentMonth animated:NO];
+        }
+        else {
+            [self selectRow:(components.month - 1) inComponent:self.componentMonth animated:NO];
+        }
+    }
+
+    // setting days
+    if (self.componentDay != -1) {
+        if (self.wrapDays) {
+            NSInteger dayMidpoint = maxNumOfDays * (rowMultiplierDays / 2);
+            [self selectRow:[self rowFromDay:(components.day + dayMidpoint)] inComponent:self.componentDay animated:NO];
+        } else {
+            [self selectRow:[self rowFromDay:components.day] inComponent:self.componentDay animated:NO];
+        }
+    }
+    
     _date = [[NSCalendar currentCalendar] dateFromComponents:components];
 }
 
 -(void)setDateFormat:(DXConfigurableDatePickerFormat)dateFormat{
     _dateFormat = dateFormat;
+    NSDate* date = self.date;
     [self updateComponentNumbers];
     [self reloadAllComponents];
+    [self setNeedsLayout];
+    [self setDate:date];
 }
 
 -(void)setKeepHiddenComponentsWidth:(BOOL)keepHiddenComponentsWidth{
     _keepHiddenComponentsWidth = keepHiddenComponentsWidth;
+    NSDate* date = self.date;
     [self updateComponentNumbers];
     [self reloadAllComponents];
+    [self setNeedsLayout];
+    [self setDate:date];
 }
 
 -(void)updateComponentNumbers{
-//    self.componentMonth = 0;
-//    self.componentDay = 1;
-//    self.componentYear = 2;
-//    self.componentsNumber = 3;
-    
     if (self.keepHiddenComponentsWidth ||
         self.dateFormat == DXConfigurableDatePickerFormatNormal) {
         self.componentMonth = 0;
@@ -202,22 +207,16 @@ static const CGFloat componentWidthYear = 93.0f;
         self.componentMonth = 0;
         self.componentYear = 1;
         self.componentsNumber = 2;
+        self.componentDay = -1;
     } else if (self.dateFormat == DXConfigurableDatePickerFormatYearOnly){
         self.componentYear = 0;
         self.componentsNumber = 1;
+        self.componentDay = -1;
+        self.componentMonth = -1;
     }
 }
 
 #pragma mark - YEARS
-
-//-(void)setYearFirst:(BOOL)yearFirst
-//{
-//    _yearFirst = yearFirst;
-//    NSDate* date = self.date;
-//    [self reloadAllComponents];
-//    [self setNeedsLayout];
-//    [self setDate:date];
-//}
 
 -(void)setMinimumYear:(NSNumber *)minimumYear {
     NSDate* currentDate = self.date;
@@ -365,19 +364,19 @@ static const CGFloat componentWidthYear = 93.0f;
 -(CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
     if (self.dateFormat == DXConfigurableDatePickerFormatNormal || self.keepHiddenComponentsWidth) {
         if (component == self.componentMonth)
-            return componentWidthMonth;
+            return self.componentWidthMonth;
         if (component == self.componentDay)
-            return componentWidthDay;
+            return self.componentWidthDay;
         else
-            return componentWidthYear;
+            return self.componentWidthYear;
     }
     
     if (self.dateFormat == DXConfigurableDatePickerFormatNoDay) {
-        return [self hideRowForComponent:component] ? 0 : self.frame.size.width / 2;
+        return [self hideRowForComponent:component] ? 0 : self.totalComponentsWidth / 2;
     }
     
     if (self.dateFormat == DXConfigurableDatePickerFormatYearOnly) {
-        return [self hideRowForComponent:component] ? 0 : componentWidthYear;
+        return [self hideRowForComponent:component] ? 0 : self.totalComponentsWidth;
     }
     
     return 0;
@@ -400,7 +399,7 @@ static const CGFloat componentWidthYear = 93.0f;
 
         UILabel * label = [[UILabel alloc] initWithFrame:frame];
         label.font = [UIFont systemFontOfSize:24.0f];
-        label.backgroundColor = [UIColor redColor];
+        label.backgroundColor = [UIColor clearColor];
         label.shadowOffset = CGSizeMake(0.0f, 0.1f);
         label.shadowColor = [UIColor whiteColor];
         [view addSubview:label];
@@ -409,11 +408,13 @@ static const CGFloat componentWidthYear = 93.0f;
         
         if (component == self.componentMonth) {
             CGRect lblFrame = ((UILabel *)view.subviews[0]).frame;
-            CGFloat padding = 32.0f;
+            CGFloat padding = componentWidthMonthPaddingCoef * self.totalComponentsWidth;
+            if (!self.keepHiddenComponentsWidth &&
+                self.dateFormat != DXConfigurableDatePickerFormatNormal) {
+                padding = 0.0f;
+            }
             lblFrame.origin.x = padding;
-
             [((UILabel *)view.subviews[0]) setFrame:lblFrame];
-            
         }
     }
     
@@ -439,6 +440,10 @@ static const CGFloat componentWidthYear = 93.0f;
 }
 
 -(BOOL)hideRowForComponent:(NSInteger)component{
+    if (!self.keepHiddenComponentsWidth) {
+        return NO;
+    }
+    
     switch (self.dateFormat) {
         case DXConfigurableDatePickerFormatNoDay:
             if (component == self.componentDay) {
