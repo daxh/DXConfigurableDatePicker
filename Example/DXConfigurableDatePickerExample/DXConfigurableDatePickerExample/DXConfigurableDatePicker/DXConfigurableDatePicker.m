@@ -39,10 +39,10 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
 
 @property (nonatomic, strong) NSCalendar * calendar;
 
-@property (nonatomic) int totalComponentsWidth;
-@property (nonatomic) int componentWidthDay;
-@property (nonatomic) int componentWidthMonth;
-@property (nonatomic) int componentWidthYear;
+@property (nonatomic) CGFloat totalComponentsWidth;
+@property (nonatomic) CGFloat componentWidthDay;
+@property (nonatomic) CGFloat componentWidthMonth;
+@property (nonatomic) CGFloat componentWidthYear;
 
 @property (nonatomic) int componentDay;
 @property (nonatomic) int componentMonth;
@@ -118,6 +118,8 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
     _keepHiddenComponentsWidth = YES;
     
     self.totalComponentsWidth = self.frame.size.width/2;
+    NSLog(@"Total components width = %f", self.totalComponentsWidth);
+    
     self.componentWidthDay = componentWidthDayCoef * self.totalComponentsWidth;
     self.componentWidthMonth = componentWidthMonthCoef * self.totalComponentsWidth;
     self.componentWidthYear = componentWidthYearCoef * self.totalComponentsWidth;
@@ -144,6 +146,10 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
 }
 
 -(void)setDate:(NSDate *)date {
+    if (date == nil) {
+        date = [NSDate date];
+    }
+    
     NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:date];
     components.timeZone = [NSTimeZone defaultTimeZone];
 

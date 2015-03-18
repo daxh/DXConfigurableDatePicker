@@ -16,15 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="wGT-XC-1U1">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="162"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="162" id="T8A-KF-TGU"/>
-                                </constraints>
-                                <date key="date" timeIntervalSinceReferenceDate="447848580.22150302">
-                                    <!--2015-03-12 10:23:00 +0000-->
-                                </date>
-                            </datePicker>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="hs0-8a-HjH">
                                 <rect key="frame" x="143" y="331" width="314" height="29"/>
                                 <constraints>
@@ -60,13 +51,22 @@
                                     <constraint firstAttribute="height" constant="162" id="vT9-iF-zjk"/>
                                 </constraints>
                             </pickerView>
+                            <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="wGT-XC-1U1">
+                                <rect key="frame" x="0.0" y="0.0" width="606" height="162"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="162" id="T8A-KF-TGU"/>
+                                </constraints>
+                                <date key="date" timeIntervalSinceReferenceDate="447848580.22150302">
+                                    <!--2015-03-12 10:23:00 +0000-->
+                                </date>
+                            </datePicker>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="AyF-lP-Umv" firstAttribute="top" secondItem="hs0-8a-HjH" secondAttribute="bottom" constant="8" id="4X9-L9-X3v"/>
                             <constraint firstItem="AyF-lP-Umv" firstAttribute="leading" secondItem="vuj-TB-DI4" secondAttribute="trailing" constant="-18" id="If0-Pg-WZ3"/>
                             <constraint firstAttribute="centerX" secondItem="vuj-TB-DI4" secondAttribute="centerX" constant="15.5" id="PcO-EQ-Anp"/>
-                            <constraint firstAttribute="trailing" secondItem="wGT-XC-1U1" secondAttribute="trailing" id="SZt-Sa-Sby"/>
+                            <constraint firstAttribute="trailing" secondItem="wGT-XC-1U1" secondAttribute="trailing" constant="-6" id="SZt-Sa-Sby"/>
                             <constraint firstItem="wGT-XC-1U1" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Uy5-VC-2Pe"/>
                             <constraint firstItem="PDK-gr-hDT" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="141" id="ZE7-sP-pIW"/>
                             <constraint firstAttribute="trailing" secondItem="PDK-gr-hDT" secondAttribute="trailing" id="fQl-b8-Tno"/>
