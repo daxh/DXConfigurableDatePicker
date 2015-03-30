@@ -36,11 +36,6 @@ static const CGFloat baseMonthComponentsPadding = 29.25f;
 static const CGFloat baseDayComponentsWidth = 85.0f;
 static const CGFloat baseYearComponentsWidth = 90.0f;
 
-static const CGFloat componentWidthDayCoef = 0.283f;
-static const CGFloat componentWidthMonthCoef = 0.45f;
-static const CGFloat componentWidthYearCoef = 0.3f;
-static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
-
 @interface DXConfigurableDatePicker()
 
 @property (nonatomic, strong) NSCalendar * calendar;
@@ -54,7 +49,6 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
 @property (nonatomic) int componentMonth;
 @property (nonatomic) int componentYear;
 @property (nonatomic) int componentsNumber;
-
 
 @property (nonatomic, readonly) NSArray* monthStrings;
 
@@ -123,19 +117,12 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
     _wrapDays = YES;
     _keepHiddenComponentsWidth = YES;
     
-    // 300.000000 134.999996	84.899998	90.000004
     self.totalComponentsWidth = self.frame.size.width/2;
-//    self.componentWidthMonth = componentWidthMonthCoef * self.totalComponentsWidth;
-//    self.componentWidthDay = componentWidthDayCoef * self.totalComponentsWidth;
-//    self.componentWidthYear = componentWidthYearCoef * self.totalComponentsWidth;
     CGFloat k = baseTotalComponentsWidth - self.totalComponentsWidth;
     self.componentWidthMonth = baseMonthComponentsWidth * (1 - k / baseTotalComponentsWidth);
     self.componentWidthDay = baseDayComponentsWidth * (1 - k / baseTotalComponentsWidth);
     self.componentWidthYear = baseYearComponentsWidth * (1 - k / baseTotalComponentsWidth);
-    
-    NSLog(@"%f\t%f\t%f", self.frame.size.width, self.bounds.size.width, k);
-    NSLog(@"%f\t%f\t%f", self.componentWidthMonth, self.componentWidthDay, self.componentWidthYear);
-    
+   
     [self setDateFormat:DXConfigurableDatePickerFormatNormal];
 }
 
@@ -415,11 +402,10 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
         CGFloat height = [self pickerView:self rowHeightForComponent:component];
         CGRect frame = CGRectMake(0.0f, 0.0f, width, height);
         view = [[UIView alloc] initWithFrame:frame];
-        view.backgroundColor = [UIColor redColor];
 
         UILabel * label = [[UILabel alloc] initWithFrame:frame];
         label.font = [UIFont systemFontOfSize:23.0f];
-        label.backgroundColor = [UIColor greenColor];
+        label.backgroundColor = [UIColor clearColor];
         label.shadowOffset = CGSizeMake(0.0f, 0.1f);
         label.shadowColor = [UIColor whiteColor];
         [view addSubview:label];
@@ -457,11 +443,6 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
     }
     
     view.hidden = [self hideRowForComponent:component];
-    
-//        CGRect lblFrame = ((UILabel *)view.subviews[0]).frame;
-//        lblFrame.origin.x -= 18;
-//        ((UILabel *)view.subviews[0]).frame = lblFrame;
-    
     return view;
 }
 
