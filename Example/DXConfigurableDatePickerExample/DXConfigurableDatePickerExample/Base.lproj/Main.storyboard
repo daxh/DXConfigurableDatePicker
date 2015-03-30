@@ -45,6 +45,12 @@
                                     <constraint firstAttribute="height" constant="31" id="KF2-PP-yK6"/>
                                 </constraints>
                             </switch>
+                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PDK-gr-hDT" customClass="DXConfigurableDatePicker">
+                                <rect key="frame" x="0.0" y="161" width="600" height="162"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="162" id="vT9-iF-zjk"/>
+                                </constraints>
+                            </pickerView>
                             <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="wGT-XC-1U1">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="162"/>
                                 <constraints>
@@ -54,12 +60,6 @@
                                     <!--2015-03-12 10:23:00 +0000-->
                                 </date>
                             </datePicker>
-                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PDK-gr-hDT" customClass="DXConfigurableDatePicker">
-                                <rect key="frame" x="0.0" y="161" width="600" height="162"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="162" id="vT9-iF-zjk"/>
-                                </constraints>
-                            </pickerView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>

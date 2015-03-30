@@ -30,10 +30,11 @@ static const int maxNumOfDays = 31;
 static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
 
-static const CGFloat componentWidthDayCoef = 0.283f;
-static const CGFloat componentWidthMonthCoef = 0.45f;
-static const CGFloat componentWidthYearCoef = 0.3f;
-static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
+static const CGFloat baseTotalComponentsWidth = 300.0f;
+static const CGFloat baseMonthComponentsWidth = 135.0f;
+static const CGFloat baseMonthComponentsPadding = 29.25f;
+static const CGFloat baseDayComponentsWidth = 85.0f;
+static const CGFloat baseYearComponentsWidth = 90.0f;
 
 @interface DXConfigurableDatePicker()
 
@@ -48,7 +49,6 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
 @property (nonatomic) int componentMonth;
 @property (nonatomic) int componentYear;
 @property (nonatomic) int componentsNumber;
-
 
 @property (nonatomic, readonly) NSArray* monthStrings;
 
@@ -118,9 +118,10 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
     _keepHiddenComponentsWidth = YES;
     
     self.totalComponentsWidth = self.frame.size.width/2;
-    self.componentWidthDay = componentWidthDayCoef * self.totalComponentsWidth;
-    self.componentWidthMonth = componentWidthMonthCoef * self.totalComponentsWidth;
-    self.componentWidthYear = componentWidthYearCoef * self.totalComponentsWidth;
+    CGFloat k = baseTotalComponentsWidth - self.totalComponentsWidth;
+    self.componentWidthMonth = baseMonthComponentsWidth * (1 - k / baseTotalComponentsWidth);
+    self.componentWidthDay = baseDayComponentsWidth * (1 - k / baseTotalComponentsWidth);
+    self.componentWidthYear = baseYearComponentsWidth * (1 - k / baseTotalComponentsWidth);
     
     [self setDateFormat:DXConfigurableDatePickerFormatNormal];
 }
@@ -400,10 +401,11 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
         CGFloat height = [self pickerView:self rowHeightForComponent:component];
         CGRect frame = CGRectMake(0.0f, 0.0f, width, height);
         view = [[UIView alloc] initWithFrame:frame];
-
+        view.backgroundColor = [UIColor redColor];
+        
         UILabel * label = [[UILabel alloc] initWithFrame:frame];
         label.font = [UIFont systemFontOfSize:23.0f];
-        label.backgroundColor = [UIColor clearColor];
+        label.backgroundColor = [UIColor greenColor];
         label.shadowOffset = CGSizeMake(0.0f, 0.1f);
         label.shadowColor = [UIColor whiteColor];
         [view addSubview:label];
@@ -412,7 +414,8 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
         
         if (component == self.componentMonth) {
             CGRect lblFrame = ((UILabel *)view.subviews[0]).frame;
-            CGFloat padding = componentWidthMonthPaddingCoef * self.totalComponentsWidth;
+            CGFloat k = baseTotalComponentsWidth - self.totalComponentsWidth;
+            CGFloat padding = baseMonthComponentsPadding * (1 - 2 * k / baseTotalComponentsWidth);
             if (!self.keepHiddenComponentsWidth &&
                 self.dateFormat != DXConfigurableDatePickerFormatNormal) {
                 padding = 0.0f;
