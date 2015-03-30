@@ -30,7 +30,7 @@ static const int maxNumOfDays = 31;
 static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
 
-static const CGFloat baseTotalComponentsWidth = 300.0f;
+static const CGFloat baseTotalComponentsWidth = 325.0f;
 static const CGFloat baseMonthComponentsWidth = 135.0f;
 static const CGFloat baseMonthComponentsPadding = 29.25f;
 static const CGFloat baseDayComponentsWidth = 85.0f;
