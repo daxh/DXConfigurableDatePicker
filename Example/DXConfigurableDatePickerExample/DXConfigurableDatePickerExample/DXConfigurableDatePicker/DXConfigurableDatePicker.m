@@ -30,7 +30,6 @@ static const int maxNumOfDays = 31;
 static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
 
-static const CGFloat baseTotalComponentsWidth = 300.0f;
 static const CGFloat componentWidthDayCoef = 0.283f;
 static const CGFloat componentWidthMonthCoef = 0.45f;
 static const CGFloat componentWidthYearCoef = 0.3f;
@@ -40,7 +39,6 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
 
 @property (nonatomic, strong) NSCalendar * calendar;
 
-@property (nonatomic) CGFloat totalComponentsWidthScale;
 @property (nonatomic) CGFloat totalComponentsWidth;
 @property (nonatomic) CGFloat componentWidthDay;
 @property (nonatomic) CGFloat componentWidthMonth;
@@ -120,10 +118,9 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
     _keepHiddenComponentsWidth = YES;
     
     self.totalComponentsWidth = self.frame.size.width/2;
-    self.totalComponentsWidthScale = baseTotalComponentsWidth / self.totalComponentsWidth;
-    self.componentWidthDay = componentWidthDayCoef * self.totalComponentsWidth * self.totalComponentsWidthScale;
-    self.componentWidthMonth = componentWidthMonthCoef * self.totalComponentsWidth * self.totalComponentsWidthScale;
-    self.componentWidthYear = componentWidthYearCoef * self.totalComponentsWidth * self.totalComponentsWidthScale;
+    self.componentWidthDay = componentWidthDayCoef * self.totalComponentsWidth;
+    self.componentWidthMonth = componentWidthMonthCoef * self.totalComponentsWidth;
+    self.componentWidthYear = componentWidthYearCoef * self.totalComponentsWidth;
     
     [self setDateFormat:DXConfigurableDatePickerFormatNormal];
 }
@@ -415,7 +412,7 @@ static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
         
         if (component == self.componentMonth) {
             CGRect lblFrame = ((UILabel *)view.subviews[0]).frame;
-            CGFloat padding = componentWidthMonthPaddingCoef * self.totalComponentsWidth * self.totalComponentsWidthScale;
+            CGFloat padding = componentWidthMonthPaddingCoef * self.totalComponentsWidth;
             if (!self.keepHiddenComponentsWidth &&
                 self.dateFormat != DXConfigurableDatePickerFormatNormal) {
                 padding = 0.0f;
