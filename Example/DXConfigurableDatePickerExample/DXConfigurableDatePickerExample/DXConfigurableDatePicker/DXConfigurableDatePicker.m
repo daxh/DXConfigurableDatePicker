@@ -401,11 +401,10 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
         CGFloat height = [self pickerView:self rowHeightForComponent:component];
         CGRect frame = CGRectMake(0.0f, 0.0f, width, height);
         view = [[UIView alloc] initWithFrame:frame];
-        view.backgroundColor = [UIColor redColor];
         
         UILabel * label = [[UILabel alloc] initWithFrame:frame];
         label.font = [UIFont systemFontOfSize:23.0f];
-        label.backgroundColor = [UIColor greenColor];
+        label.backgroundColor = [UIColor clearColor];
         label.shadowOffset = CGSizeMake(0.0f, 0.1f);
         label.shadowColor = [UIColor whiteColor];
         [view addSubview:label];
