@@ -31,10 +31,10 @@ static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
 
 static const CGFloat baseTotalComponentsWidth = 300.0f;
-static const CGFloat componentWidthDayCoef = 0.285f;
-static const CGFloat componentWidthMonthCoef = 0.44f;
+static const CGFloat componentWidthDayCoef = 0.283f;
+static const CGFloat componentWidthMonthCoef = 0.45f;
 static const CGFloat componentWidthYearCoef = 0.3f;
-static const CGFloat componentWidthMonthPaddingCoef = 0.09f;
+static const CGFloat componentWidthMonthPaddingCoef = 0.0975f;
 
 @interface DXConfigurableDatePicker()
 
