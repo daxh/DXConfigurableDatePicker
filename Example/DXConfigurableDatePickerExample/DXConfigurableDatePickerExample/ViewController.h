@@ -10,10 +10,11 @@
 #import "DXConfigurableDatePicker.h"
 
 @interface ViewController : UIViewController
-
+<DXConfigurableDatePickerDelegate>
 @property (nonatomic, strong) IBOutlet DXConfigurableDatePicker * confDatePicker;
 @property (nonatomic, strong) IBOutlet UISegmentedControl * segment;
 @property (nonatomic, strong) IBOutlet UISwitch * switcher;
+@property (nonatomic, strong) IBOutlet UILabel * label;
 
 @end
 

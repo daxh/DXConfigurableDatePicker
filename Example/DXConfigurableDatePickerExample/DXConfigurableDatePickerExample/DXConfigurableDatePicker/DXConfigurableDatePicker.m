@@ -24,8 +24,8 @@
 #import "DXConfigurableDatePicker.h"
 
 static const int dateComponentFlags = NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth;
-static const int rowMultiplierMonths = 340;
-static const int rowMultiplierDays = 340;
+static const int rowMultiplierMonths = 5;
+static const int rowMultiplierDays = 5;
 static const int maxNumOfDays = 31;
 static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
@@ -112,6 +112,7 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
     self.delegate = self;
     
     self.calendar = [NSCalendar currentCalendar];
+    self.calendar.timeZone = [NSTimeZone localTimeZone];
     _enableColourRow = YES;
     _wrapMonths = YES;
     _wrapDays = YES;
@@ -150,7 +151,6 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
     }
     
     NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:date];
-    components.timeZone = [NSTimeZone defaultTimeZone];
 
     // setting years
     if (self.minimumYear && components.year < self.minimumYear.integerValue)
@@ -180,7 +180,7 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
         }
     }
     
-    _date = [[NSCalendar currentCalendar] dateFromComponents:components];
+    _date = [self.calendar dateFromComponents:components];
 }
 
 -(void)setDateFormat:(DXConfigurableDatePickerFormat)dateFormat{
@@ -226,27 +226,25 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
 -(void)setMinimumYear:(NSNumber *)minimumYear {
     NSDate* currentDate = self.date;
     NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:currentDate];
-    components.timeZone = [NSTimeZone defaultTimeZone];
     
     if (minimumYear && components.year < minimumYear.integerValue)
         components.year = minimumYear.integerValue;
     
     _minimumYear = minimumYear;
     [self reloadAllComponents];
-    [self setDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
+    [self setDate:[self.calendar dateFromComponents:components]];
 }
 
 -(void)setMaximumYear:(NSNumber *)maximumYear {
     NSDate* currentDate = self.date;
     NSDateComponents* components = [[NSCalendar currentCalendar] components:dateComponentFlags fromDate:currentDate];
-    components.timeZone = [NSTimeZone defaultTimeZone];
     
     if (maximumYear && components.year > maximumYear.integerValue)
         components.year = maximumYear.integerValue;
     
     _maximumYear = maximumYear;
     [self reloadAllComponents];
-    [self setDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
+    [self setDate:[self.calendar dateFromComponents:components]];
 }
 
 -(int)yearFromRow:(NSUInteger)row {
@@ -295,11 +293,13 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
 
 -(NSUInteger) findDayAdjustment:(NSUInteger) day {
     NSDateComponents* components = [self.calendar components:dateComponentFlags fromDate:[NSDate date]];
-    components.timeZone = [NSTimeZone defaultTimeZone];
     components.year = [self yearFromRow:[self selectedRowInComponent:self.componentYear]];
     components.month = [self monthFromRow:[self selectedRowInComponent:self.componentMonth]];
+    components.day = 1; // after some SDK update code wouldn't work correct without this line
     NSDate * date = [self.calendar dateFromComponents:components];
-    NSRange rng = [self.calendar rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:date];
+    NSRange rng = [self.calendar rangeOfUnit:NSCalendarUnitDay
+                            inUnit:NSCalendarUnitMonth
+                           forDate:date];
     return (day >= rng.location && day <=rng.length) ? 0 : day - rng.length;
 }
 
@@ -337,8 +337,8 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
     if ([self.configurableDatePickerDelegate respondsToSelector:@selector(configurableDatePickerWillChangeDate:)])
         [self.configurableDatePickerDelegate configurableDatePickerWillChangeDate:self];
     
-    _date = [[NSCalendar currentCalendar] dateFromComponents:components];
-    
+    _date = [self.calendar dateFromComponents:components];
+
     if ([self.configurableDatePickerDelegate respondsToSelector:@selector(configurableDatePickerDidChangeDate:)])
         [self.configurableDatePickerDelegate configurableDatePickerDidChangeDate:self];
     [self didChangeValueForKey:@"date"];

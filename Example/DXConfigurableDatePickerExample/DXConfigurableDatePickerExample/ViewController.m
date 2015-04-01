@@ -14,6 +14,16 @@
 
 @implementation ViewController
 
+-(void)configurableDatePickerWillChangeDate:(DXConfigurableDatePicker *)picker{
+//    self.label.text = picker.date.description;
+}
+
+-(void)configurableDatePickerDidChangeDate:(DXConfigurableDatePicker *)picker{
+    NSCalendar * cal = [NSCalendar currentCalendar];
+    NSDateComponents * dc = [cal components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:picker.date];
+    self.label.text = [NSString stringWithFormat:@"%@ \n %ld:%ld:%ld", picker.date.description, (long)dc.month, (long)dc.day, (long)dc.year];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
@@ -24,6 +34,7 @@
     [self.switcher addTarget:self
                       action:@selector(switcherValueChanged:)
             forControlEvents:UIControlEventValueChanged];
+    self.confDatePicker.configurableDatePickerDelegate = self;
 }
 
 -(void)segmentValueChanged:(id)sender{
