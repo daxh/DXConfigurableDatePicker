@@ -24,8 +24,8 @@
 #import "DXConfigurableDatePicker.h"
 
 static const int dateComponentFlags = NSCalendarUnitDay | NSCalendarUnitYear | NSCalendarUnitMonth;
-static const int rowMultiplierMonths = 5;
-static const int rowMultiplierDays = 5;
+static const int rowMultiplierMonths = 340;
+static const int rowMultiplierDays = 340;
 static const int maxNumOfDays = 31;
 static const int minValOfYear = 1;
 static const int maxValOfYear = 99999;
