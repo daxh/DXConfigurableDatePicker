@@ -136,6 +136,18 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
         [super setDelegate:delegate];
 }
 
+-(void)callDelegateWill{
+    [self willChangeValueForKey:@"date"];
+    if ([self.configurableDatePickerDelegate respondsToSelector:@selector(configurableDatePickerWillChangeDate:)])
+        [self.configurableDatePickerDelegate configurableDatePickerWillChangeDate:self];
+}
+
+-(void)callDelegateDid{
+    if ([self.configurableDatePickerDelegate respondsToSelector:@selector(configurableDatePickerDidChangeDate:)])
+        [self.configurableDatePickerDelegate configurableDatePickerDidChangeDate:self];
+    [self didChangeValueForKey:@"date"];
+}
+
 -(id<UIPickerViewDataSource>)dataSource {
     return self;
 }
@@ -189,7 +201,9 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
     [self updateComponentNumbers];
     [self reloadAllComponents];
     [self setNeedsLayout];
-    [self setDate:date];
+    [self callDelegateWill];
+        [self setDate:date];
+    [self callDelegateDid];
 }
 
 -(void)setKeepHiddenComponentsWidth:(BOOL)keepHiddenComponentsWidth{
@@ -284,6 +298,10 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
     return self.monthStrings[[self monthFromRow:row] - 1];
 }
 
+-(NSUInteger) monthFromDate{
+    return [self.calendar components:dateComponentFlags fromDate:_date].month;
+}
+
 #pragma mark - DAYS
 
 -(void)setWrapDays:(BOOL)wrapDays {
@@ -318,30 +336,31 @@ static const CGFloat baseYearComponentsWidth = 90.0f;
     return day - 1;
 }
 
+-(NSUInteger) dayFromDate{
+    return [self.calendar components:dateComponentFlags fromDate:_date].day;
+}
+
 #pragma mark - UIPickerViewDataSource
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    NSUInteger day = [self dayFromRow:[self selectedRowInComponent:self.componentDay]];
-    NSUInteger dayAdjustment = [self findDayAdjustment:day];
-    if (dayAdjustment > 0) {
-        day -= dayAdjustment;
-        [self selectRow:[self rowFromDay:day] inComponent:self.componentDay animated:YES];
+    NSUInteger day = [self dayFromDate];
+    if (self.componentDay != -1) {
+        day = [self dayFromRow:[self selectedRowInComponent:self.componentDay]];
+        NSUInteger dayAdjustment = [self findDayAdjustment:day];
+        if (dayAdjustment > 0) {
+            day -= dayAdjustment;
+            [self selectRow:[self rowFromDay:day] inComponent:self.componentDay animated:YES];
+        }
     }
     
     NSDateComponents* components = [[NSDateComponents alloc] init];
     components.day = day;
-    components.month = [self monthFromRow:[self selectedRowInComponent:self.componentMonth]];
+    components.month = self.componentMonth != -1 ? [self monthFromRow:[self selectedRowInComponent:self.componentMonth]] : [self monthFromDate];
     components.year = [self yearFromRow:[self selectedRowInComponent:self.componentYear]];
     
-    [self willChangeValueForKey:@"date"];
-    if ([self.configurableDatePickerDelegate respondsToSelector:@selector(configurableDatePickerWillChangeDate:)])
-        [self.configurableDatePickerDelegate configurableDatePickerWillChangeDate:self];
-    
-    _date = [self.calendar dateFromComponents:components];
-
-    if ([self.configurableDatePickerDelegate respondsToSelector:@selector(configurableDatePickerDidChangeDate:)])
-        [self.configurableDatePickerDelegate configurableDatePickerDidChangeDate:self];
-    [self didChangeValueForKey:@"date"];
+    [self callDelegateWill];
+        _date = [self.calendar dateFromComponents:components];
+    [self callDelegateDid];
 }
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {

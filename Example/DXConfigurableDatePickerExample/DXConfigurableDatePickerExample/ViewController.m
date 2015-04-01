@@ -15,13 +15,20 @@
 @implementation ViewController
 
 -(void)configurableDatePickerWillChangeDate:(DXConfigurableDatePicker *)picker{
-//    self.label.text = picker.date.description;
 }
 
 -(void)configurableDatePickerDidChangeDate:(DXConfigurableDatePicker *)picker{
-    NSCalendar * cal = [NSCalendar currentCalendar];
-    NSDateComponents * dc = [cal components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:picker.date];
-    self.label.text = [NSString stringWithFormat:@"%@ \n %ld:%ld:%ld", picker.date.description, (long)dc.month, (long)dc.day, (long)dc.year];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    
+    if (picker.dateFormat == DXConfigurableDatePickerFormatNoDay) {
+        [formatter setDateFormat:@"MMMM YYYY"];
+    } else if (picker.dateFormat == DXConfigurableDatePickerFormatNormal) {
+        [formatter setDateFormat:@"d MMMM YYYY"];
+    } else if (picker.dateFormat == DXConfigurableDatePickerFormatYearOnly) {
+        [formatter setDateFormat:@"YYYY"];
+    }
+
+    self.label.text = [formatter stringFromDate:picker.date];
 }
 
 - (void)viewDidLoad {
@@ -31,10 +38,13 @@
     [self.segment addTarget:self
                      action:@selector(segmentValueChanged:)
            forControlEvents:UIControlEventValueChanged];
+    
     [self.switcher addTarget:self
                       action:@selector(switcherValueChanged:)
             forControlEvents:UIControlEventValueChanged];
+    
     self.confDatePicker.configurableDatePickerDelegate = self;
+    [self configurableDatePickerDidChangeDate:self.confDatePicker];
 }
 
 -(void)segmentValueChanged:(id)sender{
